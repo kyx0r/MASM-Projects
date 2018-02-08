@@ -1,5 +1,8 @@
 		include \masm32\include\masm32rt.inc
 
+;.686		
+;.model flat
+		;extern _MessageBoxA@16 : PROC 
 .data
 	   num1 db 0
        msg1 db "What is your name? ",0
@@ -8,10 +11,10 @@
 	   frontquote db "'",0
 	   space db "   ",0
 	   welcome db " Welcome!",0ah,0
+	   bye db "Goodbye!",0ah,0
 		
 	   continue db "Do you want to continue?",0ah,0
 	   yes db "Yes",0
-	   ;yes2 db "Yes",0
 	   no db "No",0
 .data?
        buffer db 100 dup(?)   ; reserve 100 bytes for input storage
@@ -27,41 +30,42 @@ spacefunc proc
 	   
 
 	   
-RDchar proc
+CMPchar proc
 		push 1000 
-		;push esi
-		;push edi
-		mov ecx,6 ;the length of the abc and def strings	
-		
-		;mov edx, offset choice
-		push offset choice
-		call StdIn 
+		mov ecx,3 ;the length of the abc and def strings	
 		
 		cld                                  ;set the direction flag so that EDI and ESI will increase using repe
-		mov esi, offset [choice]               ;moves address of abc string into esi
+		mov esi, edx               ;moves address of edx string into esi
 		mov edi, offset [yes]
-		;lea esi, offset [choice]               ;moves address of abc string into esi
-		;lea edi, offset [yes]
+		
 		repe cmpsb     						;#repeat compare [esi] with [edi] until ecx!=0 and current chars in strings match	
-		;repz cmpsb
+		
 		cmp ecx,0                         ;#test if the above command passed until the end of strings
 		
-		je strings_are_equal  							;	#if yes then strings are equal
-		push offset no 
-		call StdOut									;	# here print the message that strings are not equal (i.e. invoke MessageBox)
-		call spacefunc
-		jmp exit0
+		je strings_are_equal  							;#if yes then strings are equal
+		jmp strings_not_equal
 		
 		
 		ret
-	RDchar endp
+	CMPchar endp
+
+INPUT proc
+		push 10
+		push offset choice
+		call StdIn 
+		mov edx, offset choice
+		ret
+		INPUT endp
 	
 strings_are_equal:		
 		push offset welcome 
 		call StdOut
+		jmp exit0
 		
-;strings_not_equal:	
-		;jmp exit0
+strings_not_equal:
+		push offset bye
+		call StdOut
+		jmp exit0
 			
 			
 			
@@ -104,7 +108,8 @@ start:
 		 
 		 call spacefunc
 		 
-		 call RDchar
+		 call INPUT
+		 call CMPchar
 		
 
 	   
