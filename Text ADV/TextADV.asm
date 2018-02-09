@@ -1,8 +1,17 @@
-		include \masm32\include\masm32rt.inc
+	include \masm32\include\masm32rt.inc
 
-;.686		
-;.model flat
-		;extern _MessageBoxA@16 : PROC 
+	include     \masm32\include\winmm.inc
+	includelib  \masm32\lib\winmm.lib
+
+	includelib  \masm32\lib\advapi32.lib
+
+	include     \masm32\include\d3d8.inc
+	includelib  \masm32\lib\d3d8.lib
+
+	include     \masm32\include\winextra.def
+		
+		
+
 .data
 	   num1 db 0
        msg1 db "What is your name? ",0
@@ -16,6 +25,7 @@
 	   continue db "Do you want to continue?",0ah,0
 	   yes db "Yes",0
 	   no db "No",0
+	   WinTitleString db 'Text Adventure',0    ; Window title
 .data?
        buffer db 100 dup(?)   ; reserve 100 bytes for input storage
 	   choice db 20 dup(?)
