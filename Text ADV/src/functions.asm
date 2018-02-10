@@ -35,14 +35,14 @@ INPUT proc
 		INPUT endp
 	
 strings_are_equal:		
-		push offset welcome 
-		call StdOut
+		invoke  MessageBox,0,ADDR welcome,ADDR WinTitleString, MB_OK
 		jmp exit0
 		
 strings_not_equal:
 		push offset bye
 		call StdOut
 		jmp exit0
+		
 
 general proc
 		 

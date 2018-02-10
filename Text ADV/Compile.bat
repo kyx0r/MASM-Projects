@@ -1,4 +1,5 @@
 @echo off
+color a
 pushd c:\ASM\Text ADV\res
 
 if not exist rsrc.rc goto over1

@@ -322,3 +322,44 @@ show_text endp
 end start                       ; Tell MASM where the program ends
 
 
+
+
+
+
+
+
+
+INCLUDE Irvine32.inc
+INCLUDE Macros.inc
+INCLUDE C:\masm32\include\user32.inc
+
+.data
+POINT STRUCT
+x DWORD ?
+y DWORD ?
+POINT ENDS
+MOUSE   POINT   <>
+
+.code
+GetMouseCoords PROC 
+.REPEAT
+   invoke GetKeyState, VK_LBUTTON   
+    .if sbyte ptr ah<0
+      mov ebx, 1
+   .ENDIF
+.UNTIL(ebx==1)
+   INVOKE   GetCursorPos, ADDR MOUSE
+   ;here is where I would put the Invoke ScreenToClient command if I knew how to use it
+
+   mov eax, MOUSE.x
+   Call Writedec
+   mov al, "X"
+   Call WriteChar
+   mov eax, MOUSE.Y
+   Call Writedec
+   mov eax, 10000
+   Call Delay
+
+ret
+GetMouseCoords ENDP
+

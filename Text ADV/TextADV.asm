@@ -25,9 +25,10 @@
 
 	   	   		
 start:
+		INVOKE SetConsoleTitle, ADDR WinTitleString     ;Set window title. I figured this out through deep library search. In kernel32
 		call general
 		call INPUT
-		call CMPchar	   
+		call CMPchar	
 exit0:
 		inkey
 		push 0
