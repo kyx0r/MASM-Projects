@@ -10,7 +10,7 @@
 
 	include     \masm32\include\winextra.def
 		
-		
+	;IDI_ICON equ 01h	Icon does not set in Windows 10 :(
 
 .data
 	   num1 db 0
@@ -42,17 +42,17 @@ spacefunc proc
 	   
 CMPchar proc
 		push 1000 
-		mov ecx,3 ;the length of the abc and def strings	
+		mov ecx,3                            ;the length of the abc and def strings	
 		
 		cld                                  ;set the direction flag so that EDI and ESI will increase using repe
-		mov esi, edx               ;moves address of edx string into esi
+		mov esi, edx                         ;moves address of edx string into esi
 		mov edi, offset [yes]
 		
-		repe cmpsb     						;#repeat compare [esi] with [edi] until ecx!=0 and current chars in strings match	
+		repe cmpsb     						 ;#repeat compare [esi] with [edi] until ecx!=0 and current chars in strings match	
 		
-		cmp ecx,0                         ;#test if the above command passed until the end of strings
+		cmp ecx,0                            ;#test if the above command passed until the end of strings
 		
-		je strings_are_equal  							;#if yes then strings are equal
+		je strings_are_equal  				 ;#if yes then strings are equal
 		jmp strings_not_equal
 		
 		
@@ -81,6 +81,8 @@ strings_not_equal:
 			
 			
 start:
+		 ;invoke LoadIcon,NULL, IDI_ICON
+		 
 		 push offset msg1 ; put in to stack the effective add of msg1
 		 call StdOut ; call console display API
 
