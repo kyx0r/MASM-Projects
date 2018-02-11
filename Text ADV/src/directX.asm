@@ -1,10 +1,13 @@
+include \ASM\Text ADV\src\Vertice.asm
 include \ASM\Text ADV\src\renderX.asm
+
 
 .CODE
 ;-----------------------------------------------------------------------------
 ; Name: InitD3D
 ; Desc: Initializes Direct3D8
 ;-----------------------------------------------------------------------------
+
 InitD3D PROC hWnd:DWORD
     LOCAL d3ddm:D3DDISPLAYMODE 
     LOCAL d3dpp:D3DPRESENT_PARAMETERS
@@ -41,6 +44,8 @@ InitD3D PROC hWnd:DWORD
 
 ;   Device states would normally be set here
 
+	;mcall [g_pd3dDevice],IDirect3DDevice8_SetRenderState, D3DRS_ZENABLE, TRUE
+	
     return S_OK
 InitD3D ENDP
 
@@ -88,8 +93,6 @@ MsgProc PROC hWnd:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
     ret
 MsgProc ENDP
 
-
-
 ;-----------------------------------------------------------------------------
 ; Name: WinMain
 ; Desc: The application's entry point
@@ -133,7 +136,11 @@ LOCAL hWnd:HWND
 ;   Initialize Direct3D
     invoke InitD3D, hWnd
     .if eax == S_OK
-    
+	
+    invoke InitVB
+	
+;	.if eax == S_OK
+	
 ;   Show the window
         invoke ShowWindow, hWnd, SW_SHOWDEFAULT
         invoke UpdateWindow, hWnd  ; send WM_PAINT to the window proc

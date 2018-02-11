@@ -37,10 +37,35 @@ Global_Vars proc
 
     g_pD3D              LPDIRECT3D8             NULL
     g_pd3dDevice        LPDIRECT3DDEVICE8       NULL
+	g_pVB               LPDIRECT3DVERTEXBUFFER8 NULL        ; Buffer to hold vertices
+	
+	;CUSTOMVERTEX-------------------------------------------------------------------
+	
+	D3DFVF_CUSTOMVERTEX EQU (D3DFVF_XYZRHW OR D3DFVF_DIFFUSE)
 
+    CUSTOMVERTEX    struct  DWORD
+        x       FLOAT   ?
+        y       FLOAT   ? 
+        z       FLOAT   ?
+        rhw     FLOAT   ?               ; The transformed position for the vertex
+        color   DWORD   ?               ; The vertex color
+    CUSTOMVERTEX    ENDS
+	
     tmpfloat        FLOAT                   1.0f
     d3dcol        D3DCOLOR                00000000h;
+	
+	x equ <250.0f >
+    y equ <250.0f >
+
+    g_Vertices CUSTOMVERTEX <150.0f, 50.0f, 0.5f, 1.0f, 0ffff0000h>,\
+                           <x, y, 0.5f, 1.0f, 0ff00ff00h>,\
+                           <50.0f, y, 0.5f, 1.0f, 0ff00ffffh>
+	
+	;FONT------------------------------------------------------------------------------
+	
 	;g_pFontUL           LPD3DXFONT              NULL    ; Used to create the under-lined font
+	
+	
 	;Coordinates------------------------------------------------------------------
 	
 	plainTextC RECT <10,10,200,30>

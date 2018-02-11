@@ -23,15 +23,18 @@ Render PROC
      mcall [g_pd3dDevice],IDirect3DDevice8_BeginScene
     
 ;   Rendering of scene objects can happen here
-  
+	mcall [g_pd3dDevice],IDirect3DDevice8_SetStreamSource, 0, g_pVB, sizeof CUSTOMVERTEX
+    mcall [g_pd3dDevice],IDirect3DDevice8_SetVertexShader, D3DFVF_CUSTOMVERTEX
+    mcall [g_pd3dDevice],IDirect3DDevice8_DrawPrimitive, D3DPT_TRIANGLELIST, 0, 1
+
 ;   End the scene.
     mcall [g_pd3dDevice],IDirect3DDevice8_EndScene
     
 ;   Present the backbuffer contents to the display.
     mcall [g_pd3dDevice],IDirect3DDevice8_Present, NULL, NULL, NULL, NULL
 	
-	; mcall [g_pFontUL],ID3DXFont_DrawTextA, ADDR plainText, -1, ADDR plainTextC, DT_LEFT OR DT_WORDBREAK , 0ff00ffffh
-    ; invoke wsprintf,addr buffer,addr szTexttemplate
+	 ; mcall [g_pFontUL],ID3DXFont_DrawTextA, ADDR plainText, -1, ADDR plainTextC, DT_LEFT OR DT_WORDBREAK , 0ff00ffffh
+     ; invoke wsprintf,addr buffer,addr szTexttemplate, 
     
     ret
 Render ENDP
