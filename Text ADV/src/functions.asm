@@ -3,7 +3,6 @@
 spacefunc proc
 		push offset space
 		call StdOut
-		;jmp cont
 		ret
 		spacefunc endp
 		
@@ -13,13 +12,21 @@ CMPchar proc
 		
 		cld                                  ;set the direction flag so that EDI and ESI will increase using repe
 		mov esi, edx                         ;moves address of edx string into esi
-		mov edi, offset [yes]
+		mov edi, offset [yes] 
 		
 		repe cmpsb     						 ;#repeat compare [esi] with [edi] until ecx!=0 and current chars in strings match	
 		
 		cmp ecx,0                            ;#test if the above command passed until the end of strings
 		
 		je strings_are_equal  				 ;#if yes then strings are equal
+		
+		mov esi, edx
+		mov edi, offset [no]
+		repe cmpsb
+		cmp ecx,0
+		
+		je noreply
+		
 		jmp strings_not_equal
 		
 		
@@ -35,14 +42,18 @@ INPUT proc
 		INPUT endp
 	
 strings_are_equal:		
-		invoke  MessageBox,0,ADDR welcome,ADDR WinTitleString, MB_OK
-		jmp exit0
+		invoke  MessageBox,0,ADDR welcome,ADDR ConsTitleString, MB_OK
+		jmp createGraphicsWindow
+		noreply:
+				push offset bye
+				call StdOut
+				jmp exit0
 		
 strings_not_equal:
-		push offset bye
+		push offset error
 		call StdOut
-		jmp exit0
-		
+		jmp start
+				
 
 general proc
 		 
