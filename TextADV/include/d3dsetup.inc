@@ -1,0 +1,2 @@
+CreateD3DDevice PROTO :DWORD,:DWORD,:DWORD,:DWORD,:DWORD
+DestroyD3DDevice PROTO
