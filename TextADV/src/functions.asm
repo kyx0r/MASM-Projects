@@ -42,7 +42,7 @@ INPUT proc
 		INPUT endp
 	
 strings_are_equal:		
-		;invoke  MessageBox,0,ADDR welcome,ADDR ConsTitleString, MB_OK
+		invoke  MessageBox,0,ADDR welcome,ADDR ConsTitleString, MB_OK
 		jmp createGraphicsWindow
 		noreply:
 				push offset bye
@@ -54,7 +54,13 @@ strings_not_equal:
 		call StdOut
 		jmp start
 				
-
+request3D:
+		mov eax, 3
+		invoke GetModuleHandle,NULL 
+		;mov edx, 8
+		invoke WinMain,eax,NULL,NULL,NULL
+		jmp noreply
+				
 general proc
 		 
 		 push offset msg1 ; put in to stack the effective add of msg1

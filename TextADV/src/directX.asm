@@ -1,18 +1,11 @@
-;include \ASM\Text ADV\src\Vertice.asm
+include \ASM\TextADV\src\Vertice.asm
 include \ASM\TextADV\src\renderX.asm
 
 .code
 
-Init PROC
+Init2D PROC
 	pusha
 	
-	; Create a D3D device. The parameters are:
-	;  * Handle of owner window
-	;  * Width of owner window
-	;  * Height of owner window
-	;  * Desired bits per pixel
-	;  * Fullscreen flag (true/false)
-	;
 	invoke CreateD3DDevice,hWindow,XDIM,YDIM,32,0
 	.if eax == FALSE
 		invoke ExitProcess,0
@@ -41,22 +34,99 @@ Init PROC
 		
 	popa
 	ret
-Init ENDP
+Init2D ENDP
 
 
+
+Init3D PROC
+	LOCAL temp:DWORD
+	
+	pusha
+	
+	invoke CreateD3DDevice,hWindow,XDIM,YDIM,32,0
+	.if eax == FALSE
+		invoke ExitProcess,0
+		popa
+		ret
+	.endif
+
+	; Set the culling mode to clockwise defined backfaces.
+	COINVOKE lpD3DDevice,IDirect3DDevice8,SetRenderState, D3DRS_CULLMODE, D3DCULL_CW
+
+	; Set the vertex format.
+	COINVOKE lpD3DDevice,IDirect3DDevice8,SetVertexShader, D3DFVF_XYZ + D3DFVF_NORMAL + D3DFVF_TEX1
+
+	; Create a vertex buffer
+	mov eax,36
+	mov ebx,sizeof CUBE
+	mul ebx
+	mov temp,eax
+	COINVOKE lpD3DDevice,IDirect3DDevice8,CreateVertexBuffer, temp, 0,\
+	                                                          D3DFVF_XYZ + D3DFVF_NORMAL + D3DFVF_TEX1,\
+	                                                          D3DPOOL_MANAGED, ADDR lpVertexBuffer
+	.if lpVertexBuffer == NULL
+		MSGBOX "Failed to create vertex buffer"
+		invoke ExitProcess,0
+	.endif
+
+
+	; Lock the vertex buffer.
+	COINVOKE lpVertexBuffer,IDirect3DVertexBuffer8,Lock_,0, 0, ADDR lpVertexBufferData, NULL
+	
+	; Populate the vertex buffer with the cube data.
+	mov esi,OFFSET cubevert
+	mov edi,lpVertexBufferData
+	mov ecx,temp
+	shr ecx,2
+	rep movsd
+
+	; Unlock the vertex buffer
+	COINVOKE lpVertexBuffer,IDirect3DVertexBuffer8,Unlock
+	
+        invoke InitTexture
+        .if eax == NULL
+        	invoke ExitProcess,0
+        .endif
+         
+	
+	; Set up a view matrix.
+	invoke _D3DXMatrixLookAtRH, ADDR viewMatrix, ADDR cameraPos, ADDR lookAt, ADDR upVector
+	COINVOKE lpD3DDevice,IDirect3DDevice8,SetTransform, D3DTS_VIEW, ADDR viewMatrix
+	
+	; Set up a projection matrix. 
+	invoke _D3DXMatrixPerspectiveFovRH, ADDR projMatrix, fov, aspect, zNear, zFar
+	COINVOKE lpD3DDevice,IDirect3DDevice8,SetTransform, D3DTS_PROJECTION, ADDR projMatrix
+
+	; Disable Z-buffering.
+	COINVOKE lpD3DDevice,IDirect3DDevice8,SetRenderState, D3DRS_ZENABLE, D3DZB_FALSE
+	
+	; Enable lighting.
+	COINVOKE lpD3DDevice,IDirect3DDevice8,SetRenderState, D3DRS_LIGHTING, TRUE
+	COINVOKE lpD3DDevice,IDirect3DDevice8,LightEnable, 0, TRUE		
+
+	; Set the light and material parameters.
+	COINVOKE lpD3DDevice,IDirect3DDevice8,SetLight, 0, ADDR light
+	COINVOKE lpD3DDevice,IDirect3DDevice8,SetMaterial, ADDR material
+
+	popa
+	ret
+Init3D ENDP
 
 
 WndProc PROC hWnd:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL crect:RECT
 	LOCAL ps:PAINTSTRUCT
-
+	cmp eax,3
+	je D3
  	mov eax,uMsg
 
  	.if eax==WM_PAINT
     		invoke BeginPaint,hWnd,ADDR ps
 
 		; Draw another frame    		
-    		invoke Draw
+    		invoke Render2D
+			D3:
+			invoke Render3D
     		
     		invoke EndPaint,hWnd,ADDR ps
     		xor eax,eax
@@ -108,7 +178,11 @@ WinMain PROC hInst:DWORD,prevInstance:DWORD,cmdlinePtr:DWORD,cmdShow:DWORD
  	mov hWindow,eax
 
 	; Initialize
-	invoke Init
+	;cmp edx,0
+	;je DX3
+	invoke Init2D
+	;DX3:
+	;invoke Init3D
  	invoke ShowWindow,eax,SW_SHOWDEFAULT
  	invoke UpdateWindow,hWindow  
 
@@ -128,14 +202,12 @@ WinMain PROC hInst:DWORD,prevInstance:DWORD,cmdlinePtr:DWORD,cmdShow:DWORD
  	EVEN
  
  	@@quitmsgposted:
+	
+	;COINVOKE lpVertexBuffer,IDirect3DVertexBuffer8,Release
 
 	; Destroy the D3D device.  
   	invoke DestroyD3DDevice
   	
-  	mov eax,msg.wParam
- 	Abort::
-  	invoke ExitProcess,eax
-  
   	ret
 WinMain ENDP
 

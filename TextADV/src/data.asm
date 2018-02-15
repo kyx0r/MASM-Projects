@@ -24,6 +24,7 @@ string proc
        WinTitleString      db 'Graphics window',0    ; Window title
 	   plainText         db "Here will be all graphics for the project.",0
 	   szTexttemplate db "%d",0
+	   szTextureName db 'res\mad040.raw',0
 	   
 string endp	   
 
@@ -41,6 +42,24 @@ Global_Vars proc
 	XDIM	EQU 640
 	YDIM	EQU 480
 	
+	cameraPos	D3DXVECTOR <0.0, 0.0,15.0>	; Position of camera (or "eye").
+	lookAt		D3DXVECTOR <0.0, 0.0, 0.0>	; The vector the camera will be looking along.
+	upVector	D3DXVECTOR <0.0, 1.0, 0.0>	; The world up-vector.
+	
+	theta		REAL4 0.0
+	d_theta		REAL4 0.020
+	clearColor	dd 0
+	clearDepth	REAL4 1.0
+	
+	light		D3DLIGHT8 <D3DLIGHT_POINT,\		
+  	                           <0.7,0.7,0.7,0.0>, <0.9,0.9,0.0,0.0>, <0.1,0.1,0.1,0.0>,\		
+	                           <0.0,0.0,15.0>, <0.0,0.0,0.0>,\		
+	                           50.0, 0.0,\			
+	                           1.0, 0.0, 0.0,\			
+	                           0.0, 0.0>				
+
+	material	D3DMATERIAL8 <<1.0,1.0,1.0,0.0>, <1.0,1.0,1.0,0.0>, <1.0,1.0,1.0,0.0>,\
+	                              <0.0,0.0,0.0,0.0>, 0.0>
 	
 
     ;g_pD3D              LPDIRECT3D8             NULL
@@ -77,18 +96,51 @@ Global_Vars proc
 	x	REAL4 ?
 	y	REAL4 ?
 	z	REAL4 ?
-	col dd ?
-	; nx	REAL4 ?
-	; ny	REAL4 ?
-	; nz	REAL4 ?
-	; u	REAL4 ?
-	; v	REAL4 ?
+	;col dd ?
+	 nx	REAL4 ?
+	 ny	REAL4 ?
+	 nz	REAL4 ?
+	 u	REAL4 ?
+	 v	REAL4 ?
     CUBE ENDS
 	
-	cubevert	CUBE < 0.50,  0.7, 0.0, 0ffff0000h>,
-					< -0.50,  0.7, 0.0, 0ffff0000h>,
-	                              <-0.17, -0.3, 0.0, 0ff00ff00h>,
-	                              < 0.17, -0.3, 0.0, 0ff0000ffh>
+cubevert 	CUBE 	<-5.0,-5.0,-5.0, 0.0, 0.0,-1.0, 0.0, 1.0>
+		CUBE	<-5.0, 5.0,-5.0, 0.0, 0.0,-1.0, 0.0, 0.0>
+		CUBE	< 5.0,-5.0,-5.0, 0.0, 0.0,-1.0, 1.0, 1.0>
+		CUBE	< 5.0, 5.0,-5.0, 0.0, 0.0,-1.0, 1.0, 0.0>
+		CUBE	< 5.0,-5.0,-5.0, 0.0, 0.0,-1.0, 1.0, 1.0>
+		CUBE	<-5.0, 5.0,-5.0, 0.0, 0.0,-1.0, 0.0, 0.0>
+		CUBE	< 5.0,-5.0, 5.0, 0.0, 0.0, 1.0, 0.0, 1.0>
+		CUBE	< 5.0, 5.0, 5.0, 0.0, 0.0 ,1.0, 0.0, 0.0>
+		CUBE	<-5.0,-5.0, 5.0, 0.0, 0.0, 1.0, 1.0, 1.0>
+		CUBE	<-5.0, 5.0, 5.0, 0.0, 0.0, 1.0, 1.0, 0.0>
+		CUBE	<-5.0,-5.0, 5.0, 0.0, 0.0, 1.0, 1.0, 1.0>
+		CUBE	< 5.0, 5.0, 5.0, 0.0, 0.0, 1.0, 0.0, 0.0>
+		CUBE	<-5.0,-5.0, 5.0,-1.0, 0.0, 0.0, 0.0, 1.0>
+		CUBE	<-5.0, 5.0, 5.0,-1.0, 0.0, 0.0, 0.0, 0.0>
+		CUBE	<-5.0,-5.0,-5.0,-1.0, 0.0, 0.0, 1.0, 1.0>
+		CUBE	<-5.0, 5.0,-5.0,-1.0, 0.0, 0.0, 1.0, 0.0>
+		CUBE	<-5.0,-5.0,-5.0,-1.0, 0.0, 0.0, 1.0, 1.0>
+		CUBE	<-5.0, 5.0, 5.0,-1.0, 0.0, 0.0, 0.0, 0.0>
+		CUBE	< 5.0,-5.0,-5.0, 1.0, 0.0, 0.0, 0.0, 1.0>
+		CUBE	< 5.0, 5.0,-5.0, 1.0, 0.0, 0.0, 0.0, 0.0>
+		CUBE	< 5.0,-5.0, 5.0, 1.0, 0.0, 0.0, 1.0, 1.0>
+		CUBE	< 5.0, 5.0, 5.0, 1.0, 0.0, 0.0, 1.0, 0.0>
+		CUBE	< 5.0,-5.0, 5.0, 1.0, 0.0, 0.0, 1.0, 1.0>
+		CUBE	< 5.0, 5.0,-5.0, 1.0, 0.0, 0.0, 0.0, 0.0>
+		CUBE	< 5.0,-5.0,-5.0, 0.0,-1.0, 0.0, 0.0, 1.0>
+		CUBE	< 5.0,-5.0, 5.0, 0.0,-1.0, 0.0, 0.0, 0.0>
+		CUBE	<-5.0,-5.0,-5.0, 0.0,-1.0, 0.0, 1.0, 1.0>
+ 		CUBE	<-5.0,-5.0, 5.0, 0.0,-1.0, 0.0, 1.0, 0.0>
+		CUBE	<-5.0,-5.0,-5.0, 0.0,-1.0, 0.0, 1.0, 1.0>
+		CUBE	< 5.0,-5.0, 5.0, 0.0,-1.0, 0.0, 0.0, 0.0>
+ 		CUBE	<-5.0, 5.0,-5.0, 0.0, 1.0, 0.0, 0.0, 1.0>
+ 		CUBE	<-5.0, 5.0, 5.0, 0.0, 1.0, 0.0, 0.0, 0.0>
+ 		CUBE	< 5.0, 5.0,-5.0, 0.0, 1.0, 0.0, 1.0, 1.0>
+  		CUBE	< 5.0, 5.0, 5.0, 0.0, 1.0, 0.0, 1.0, 0.0>
+ 		CUBE	< 5.0, 5.0,-5.0, 0.0, 1.0, 0.0, 1.0, 1.0>
+		CUBE	<-5.0, 5.0, 5.0, 0.0, 1.0, 0.0, 0.0, 0.0>	
+
 	
 	
 	;FONT------------------------------------------------------------------------------
@@ -119,9 +171,16 @@ Global_Vars endp
 		choice db 20 dup(?)
 		;hWindow		dd ?
 	
+		lpTexture	dd ?
+		lpVertexBuffer	dd ?
+	    lpVertexBufferData dd ?
+	
 		viewMatrix	D3DXMATRIX <?>
 		projMatrix	D3DXMATRIX <?>
 		worldMatrix	D3DXMATRIX <?>
+		tempMatrix	D3DXMATRIX <?>
+		rotMatrix	D3DXMATRIX <?>	
+		d3dlr		D3DLOCKED_RECT <?>	
 	NotIndexed endp	
 		
 		

@@ -18,8 +18,8 @@
 	;include 	c:\ASM\TextADV\include\cube.inc
 	;FILES --------------------------------------------------
 	include \ASM\TextADV\src\data.asm
-	include \ASM\TextADV\src\functions.asm
 	include \ASM\TextADV\src\directX.asm
+	include \ASM\TextADV\src\functions.asm
 	
 .data
 
@@ -31,7 +31,7 @@ createGraphicsWindow:
 		invoke GetModuleHandle,NULL 
 		invoke WinMain,eax,NULL,NULL,NULL
 		;invoke ExitProcess,eax
-		jmp noreply
+		jmp request3D
 		
 start:
 		INVOKE SetConsoleTitle, ADDR ConsTitleString     ;Set window title. I figured this out through deep library search. In kernel32
