@@ -67,8 +67,8 @@ Global_Vars proc
 
 	; This is the triangle. The colors are in ARGB format.
 	vertexes	CUSTOM_VERTEX < 0.0,  0.7, 0.0, 0ffff0000h>,
-	                              <-0.7, -0.7, 5.0, 0ff00ff00h>,
-	                              < 0.7, -0.7, -5.0, 0ff0000ffh>
+	                              <-0.7, -0.7, 0.0, 0ff00ff00h>,
+	                              < 0.7, -0.7, 0.0, 0ff0000ffh>
 								  ;< 0.7, -0.7, 0.0, 0ff0000ffh>
 								  ;< 0.7, -0.7, 0.0, 0ff0000ffh>
 	
@@ -77,13 +77,18 @@ Global_Vars proc
 	x	REAL4 ?
 	y	REAL4 ?
 	z	REAL4 ?
-	nx	REAL4 ?
-	ny	REAL4 ?
-	nz	REAL4 ?
-	u	REAL4 ?
-	v	REAL4 ?
+	col dd ?
+	; nx	REAL4 ?
+	; ny	REAL4 ?
+	; nz	REAL4 ?
+	; u	REAL4 ?
+	; v	REAL4 ?
     CUBE ENDS
 	
+	cubevert	CUBE < 0.50,  0.7, 0.0, 0ffff0000h>,
+					< -0.50,  0.7, 0.0, 0ffff0000h>,
+	                              <-0.17, -0.3, 0.0, 0ff00ff00h>,
+	                              < 0.17, -0.3, 0.0, 0ff0000ffh>
 	
 	
 	;FONT------------------------------------------------------------------------------

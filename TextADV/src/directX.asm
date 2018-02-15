@@ -1,39 +1,8 @@
 ;include \ASM\Text ADV\src\Vertice.asm
-;include \ASM\Text ADV\src\renderX.asm
+include \ASM\TextADV\src\renderX.asm
 
 .code
 
-; This function clears the background and draws a shaded triangle.
-Draw PROC
-	pusha
-	
-	; Cleat the target with color 00000000h (black).
-	; COINVOKE is defined in macros.inc. It's used to call functions through a COM interface.
-	COINVOKE lpD3DDevice,IDirect3DDevice8,Clear, 0, NULL, D3DCLEAR_TARGET, 00000000h, 0, 0
-
-	; Beginning of scene.	
-	COINVOKE lpD3DDevice,IDirect3DDevice8,BeginScene
-
-		; Set the vertex format.
-		COINVOKE lpD3DDevice,IDirect3DDevice8,SetVertexShader, D3DFVF_XYZ or D3DFVF_DIFFUSE
-
-		; Draw a triangle.		
-		COINVOKE lpD3DDevice,IDirect3DDevice8,DrawPrimitiveUP, D3DPT_TRIANGLELIST, 1, ADDR vertexes, sizeof CUSTOM_VERTEX
-
-	; End of scene.
-	COINVOKE lpD3DDevice,IDirect3DDevice8,EndScene
-
-	; Swap the front and back buffers.
-	COINVOKE lpD3DDevice,IDirect3DDevice8,Present, NULL, NULL, NULL, NULL
-
-	popa
-	ret
-Draw ENDP
-
-
-
-
-; This functions creates a Direct3D device and sets some initial parameters.
 Init PROC
 	pusha
 	
@@ -125,9 +94,12 @@ WinMain PROC hInst:DWORD,prevInstance:DWORD,cmdlinePtr:DWORD,cmdShow:DWORD
  	mov wc.style,CS_OWNDC or CS_HREDRAW or CS_VREDRAW
  	mov wc.lpszClassName,offset MyClassName
  	mov wc.lpfnWndProc,offset WndProc
+	invoke LoadIcon, hInst, IDI_ICON
+	mov wc.hIcon, eax
  	invoke LoadCursor,NULL,IDC_ARROW
  	mov wc.hCursor,eax
- 	mov wc.hbrBackground,0
+ 	mov wc.hbrBackground,0 
+	mov wc.hIconSm, NULL
 
  	invoke RegisterClassEx,ADDR wc
 
@@ -137,7 +109,6 @@ WinMain PROC hInst:DWORD,prevInstance:DWORD,cmdlinePtr:DWORD,cmdShow:DWORD
 
 	; Initialize
 	invoke Init
-
  	invoke ShowWindow,eax,SW_SHOWDEFAULT
  	invoke UpdateWindow,hWindow  
 

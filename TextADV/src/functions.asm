@@ -42,7 +42,7 @@ INPUT proc
 		INPUT endp
 	
 strings_are_equal:		
-		invoke  MessageBox,0,ADDR welcome,ADDR ConsTitleString, MB_OK
+		;invoke  MessageBox,0,ADDR welcome,ADDR ConsTitleString, MB_OK
 		jmp createGraphicsWindow
 		noreply:
 				push offset bye
