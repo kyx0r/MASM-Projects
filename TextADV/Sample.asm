@@ -363,3 +363,17 @@ GetMouseCoords PROC
 ret
 GetMouseCoords ENDP
 
+
+
+XOR EAX,EAX
+MOV AL,isPatched //isPatched would be a byte, hence we need correct operand sizes
+TEST EAX,EAX
+JE NotSet
+Set:
+//handle true case
+JMP End
+NotSet:
+//handle false case
+End:
+//continue
+

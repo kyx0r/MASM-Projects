@@ -3,7 +3,6 @@
 string proc
 	   ;Console strings ----------------------------------------------
 	   
-	   num1 db 0
        msg1 db "What is your name? ",0
        msg2 db "Hello ",0
 	   backquote db "'",0
@@ -174,6 +173,7 @@ Global_Vars endp
 		lpTexture	dd ?
 		lpVertexBuffer	dd ?
 	    lpVertexBufferData dd ?
+		num1 dd ?
 	
 		viewMatrix	D3DXMATRIX <?>
 		projMatrix	D3DXMATRIX <?>

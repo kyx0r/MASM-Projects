@@ -94,6 +94,7 @@ InitTexture proc
 	COINVOKE lpD3DDevice,IDirect3DDevice8,SetTextureStageState, 0, D3DTSS_COLORARG2, D3DTA_CURRENT
 
 	popa
+
 	return lpTexture
 
 InitTexture endp 

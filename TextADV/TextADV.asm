@@ -26,7 +26,7 @@
 .data?
 	   
 .code
-
+		
 createGraphicsWindow:
 		invoke GetModuleHandle,NULL 
 		invoke WinMain,eax,NULL,NULL,NULL

@@ -113,21 +113,18 @@ Init3D PROC
 Init3D ENDP
 
 
-WndProc PROC hWnd:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+WndProc2D PROC hWnd:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	LOCAL crect:RECT
 	LOCAL ps:PAINTSTRUCT
-	cmp eax,3
-	je D3
+	
  	mov eax,uMsg
 
  	.if eax==WM_PAINT
     		invoke BeginPaint,hWnd,ADDR ps
 
-		; Draw another frame    		
+		; Draw another frame 
     		invoke Render2D
-			D3:
-			invoke Render3D
-    		
+			
     		invoke EndPaint,hWnd,ADDR ps
     		xor eax,eax
   
@@ -143,11 +140,49 @@ WndProc PROC hWnd:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.else
  		invoke DefWindowProc,hWnd,uMsg,wParam,lParam
  	.endif
+	
+	ret
+	
+WndProc2D ENDP
+
+WndProc3D proc hWnd:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+		LOCAL crect:RECT
+		LOCAL ps:PAINTSTRUCT
+		mov eax,uMsg
+	
+	 	.if eax==WM_PAINT
+    		invoke BeginPaint,hWnd,ADDR ps
+
+		; Draw another frame 
+    		invoke Render3D
+			
+    		invoke EndPaint,hWnd,ADDR ps
+    		xor eax,eax
+  
+  	.elseif eax==WM_KEYDOWN
+    		.if wParam==VK_ESCAPE
+      			invoke PostMessage,hWnd,WM_CLOSE,NULL,NULL
+    		.endif
+		xor eax,eax
+		
+  	.elseif eax==WM_DESTROY
+    		invoke PostQuitMessage,0
  
+	.else
+ 		invoke DefWindowProc,hWnd,uMsg,wParam,lParam
+ 	.endif	
+	
  	ret
-WndProc ENDP
+WndProc3D endp
 
-
+; setDimension proc wc:DWORD
+	; cmp BX,8
+	; je Pass
+	; mov wc.lpfnWndProc,offset WndProc2D
+	; Pass:
+	; mov wc.lpfnWndProc,offset WndProc3D
+	; ret
+; setDimension endp
 
 
 WinMain PROC hInst:DWORD,prevInstance:DWORD,cmdlinePtr:DWORD,cmdShow:DWORD
@@ -163,7 +198,14 @@ WinMain PROC hInst:DWORD,prevInstance:DWORD,cmdlinePtr:DWORD,cmdShow:DWORD
  	mov wc.cbSize, sizeof WNDCLASSEX
  	mov wc.style,CS_OWNDC or CS_HREDRAW or CS_VREDRAW
  	mov wc.lpszClassName,offset MyClassName
- 	mov wc.lpfnWndProc,offset WndProc
+ 	cmp BX,8
+	je notPass
+	mov wc.lpfnWndProc,offset WndProc2D
+	jmp Pass
+	notPass:
+	mov wc.lpfnWndProc,offset WndProc3D
+	jmp Pass
+	Pass:
 	invoke LoadIcon, hInst, IDI_ICON
 	mov wc.hIcon, eax
  	invoke LoadCursor,NULL,IDC_ARROW
@@ -178,11 +220,16 @@ WinMain PROC hInst:DWORD,prevInstance:DWORD,cmdlinePtr:DWORD,cmdShow:DWORD
  	mov hWindow,eax
 
 	; Initialize
-	;cmp edx,0
-	;je DX3
+
+	cmp BX,8
+	je DX3
 	invoke Init2D
-	;DX3:
-	;invoke Init3D
+	jmp passs
+	DX3:
+	invoke Init3D
+	jmp passs
+	
+	passs:
  	invoke ShowWindow,eax,SW_SHOWDEFAULT
  	invoke UpdateWindow,hWindow  
 
@@ -203,8 +250,6 @@ WinMain PROC hInst:DWORD,prevInstance:DWORD,cmdlinePtr:DWORD,cmdShow:DWORD
  
  	@@quitmsgposted:
 	
-	;COINVOKE lpVertexBuffer,IDirect3DVertexBuffer8,Release
-
 	; Destroy the D3D device.  
   	invoke DestroyD3DDevice
   	
