@@ -21,7 +21,7 @@ copy "c:\ASM\TextADV\include\vector.obj" "c:\ASM\TextADV"
 pushd c:\ASM\TextADV\
 
 if errorlevel 1 goto errasm
-\masm32\bin\Link /SUBSYSTEM:CONSOLE TextADV.obj rsrc.obj d3dsetup.obj matrix.obj vector.obj
+\masm32\bin\Link /SUBSYSTEM:CONSOLE TextADV.obj rsrc.obj d3dsetup.obj matrix.obj vector.obj 
 if errorlevel 1 goto errlink
 
 TextADV.exe

@@ -143,9 +143,9 @@ cubevert 	CUBE 	<-5.0,-5.0,-5.0, 0.0, 0.0,-1.0, 0.0, 1.0>
 	
 	
 	;FONT------------------------------------------------------------------------------
-	
-	;g_pFontUL           LPD3DXFONT              NULL    ; Used to create the under-lined font
-	
+	g_hFont             LPD3DXFONT              NULL
+	g_pFont             LPD3DXFONT              NULL    ; Used to create the font
+    g_pFontUL           LPD3DXFONT              NULL    ; Used to create the under-lined font
 	
 	;Coordinates------------------------------------------------------------------
 	

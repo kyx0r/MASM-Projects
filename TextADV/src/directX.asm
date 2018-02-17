@@ -206,11 +206,11 @@ WinMain PROC hInst:DWORD,prevInstance:DWORD,cmdlinePtr:DWORD,cmdShow:DWORD
 	mov wc.lpfnWndProc,offset WndProc3D
 	jmp Pass
 	Pass:
-	invoke LoadIcon, hInst, IDI_ICON
-	mov wc.hIcon, eax
  	invoke LoadCursor,NULL,IDC_ARROW
  	mov wc.hCursor,eax
- 	mov wc.hbrBackground,0 
+ 	mov wc.hbrBackground,0
+	invoke LoadIcon, hInst, IDI_ICON
+	mov wc.hIcon,eax
 	mov wc.hIconSm, NULL
 
  	invoke RegisterClassEx,ADDR wc

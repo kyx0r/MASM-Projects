@@ -67,9 +67,8 @@ strings_not_equal:
 request3D:
 		mov BX,8
 		printf("%X\t%d\t%o\t%s\n", ebx, ebx, ebx, bin$(ebx)) printf("%X\t%d\t%o\t%s\n", ebx, ebx, ebx, bin$(ebx))
-		invoke GetModuleHandle,NULL 
-		call WinMain	
-		;invoke WinMain, edx,0,0,0
+		;invoke GetModuleHandle,NULL 
+		invoke WinMain, eax,0,0,0
 		jmp noreply
 				
 general proc

@@ -5,7 +5,7 @@
 
 
 include \masm32\include\windows.inc  
-
+include \masm32\include\dx_objbase.def ; macros to define and call COM-objects etc.
 
 
 DIRECT3D_VERSION	EQU 800h
@@ -567,7 +567,21 @@ ID3DXFont STRUCT DWORD
     OnResetDevice		dd ?
 ID3DXFont ENDS
 
+DECLARE_INTERFACE <ID3DXFont_>
+;   /*** IUnknown methods ***/
+    INHERIT_IUnknown
+;   /*** ID3DXFont methods ***/
+    STDMETHOD	<GetDevice>
+    STDMETHOD	<GetLogFont>
 
+    STDMETHOD	<Begin>
+
+    STDMETHOD	<DrawTextA>, :DWORD, :DWORD, :DWORD, :DWORD, :DWORD
+    STDMETHOD	<DrawTextW>, :DWORD, :DWORD, :DWORD, :DWORD, :DWORD
+
+    STDMETHOD	<End>
+      
+LPD3DXFONT typedef PTR
 
     
 D3DDISPLAYMODE STRUCT
@@ -701,6 +715,16 @@ D3DLIGHT8 ENDS
 Direct3DCreate8 PROTO :DWORD
 
 D3DXCreateFont PROTO :DWORD,:DWORD,:DWORD
+D3DXCreateFontIndirect	Proto	:DWORD, :DWORD, :DWORD
+D3DXCreateSprite		Proto	:DWORD, :DWORD
+D3DXCreateRenderToSurface	Proto	:DWORD, :DWORD, :DWORD, :DWORD, :DWORD, :DWORD, :DWORD
+D3DXCreateRenderToEnvMap	Proto	:DWORD, :DWORD, :DWORD, :DWORD, :DWORD, :DWORD
+D3DXAssembleShaderFromFileA	Proto	:DWORD, :DWORD, :DWORD, :DWORD, :DWORD
+D3DXAssembleShaderFromFileW	Proto	:DWORD, :DWORD, :DWORD, :DWORD, :DWORD
+D3DXAssembleShader		Proto	:DWORD, :DWORD, :DWORD, :DWORD, :DWORD, :DWORD
+D3DXGetFVFVertexSize		Proto	:DWORD
+D3DXGetErrorStringA		Proto	:DWORD, :DWORD, :DWORD
+D3DXGetErrorStringW		Proto	:DWORD, :DWORD, :DWORD
 D3DXCreateTextureFromFileA PROTO :DWORD,:DWORD,:DWORD
 D3DXCreateTextureFromFile EQU <D3DXCreateTextureFromFileA>
 D3DXMatrixMultiply PROTO :DWORD,:DWORD,:DWORD
