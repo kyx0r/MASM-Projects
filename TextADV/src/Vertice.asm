@@ -28,8 +28,13 @@ InitTexture proc
                     	  FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN,NULL
  	.if eax == INVALID_HANDLE_VALUE
     		MSGBOX "Missing file: mad040.raw"
-    		return FALSE
+			mov eax, 1
+			;printf("%X\t%d\t%o\t%s\n", eax, eax, eax, bin$(eax))
+			ret
+			;jmp noTexture
+    		;return FALSE
     	.endif
+		
     	mov fileHandle,eax
 
 	;---------------------------------------------------------------------------------------
@@ -96,5 +101,5 @@ InitTexture proc
 	popa
 
 	return lpTexture
-
+	
 InitTexture endp 

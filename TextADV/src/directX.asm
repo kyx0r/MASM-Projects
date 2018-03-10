@@ -1,45 +1,13 @@
-include \ASM\TextADV\src\Vertice.asm
-include \ASM\TextADV\src\renderX.asm
+  include \ASM\TextADV\src\Vertice.asm
+  include \ASM\TextADV\src\renderX.asm
 
-.code
-
-Init2D PROC
-	pusha
-	
-	invoke CreateD3DDevice,hWindow,XDIM,YDIM,32,0
-	.if eax == FALSE
-		invoke ExitProcess,0
-		popa
-		ret
-	.endif
-
-	; Disable Z-buffering.
-	COINVOKE lpD3DDevice,IDirect3DDevice8,SetRenderState, D3DRS_ZENABLE, D3DZB_FALSE
-	
-	; Disable lighting.
-	COINVOKE lpD3DDevice,IDirect3DDevice8,SetRenderState, D3DRS_LIGHTING, FALSE
-	
-	; Set the culling mode to no culling.
-	COINVOKE lpD3DDevice,IDirect3DDevice8,SetRenderState, D3DRS_CULLMODE, D3DCULL_NONE
-
-
-	; Transform the world matrix to move all objects "backwards".
-	invoke _D3DXMatrixTranslation, ADDR worldMatrix, xtrans,ytrans, ztrans
-	COINVOKE lpD3DDevice,IDirect3DDevice8,SetTransform, D3DTS_WORLD, ADDR worldMatrix
-	
-	; Set up a projection matrix. I'm using a right-handed coordinate system here, i.e.
-	; Z grows "towards the screen".
-	invoke _D3DXMatrixPerspectiveFovRH, ADDR projMatrix, fov, aspect, zNear, zFar
-	COINVOKE lpD3DDevice,IDirect3DDevice8,SetTransform, D3DTS_PROJECTION, ADDR projMatrix
-		
-	popa
-	ret
-Init2D ENDP
-
-
+ .code
 
 Init3D PROC
 	LOCAL temp:DWORD
+	;inc bl
+	cmp bl, 2
+	je Init2D
 	
 	pusha
 	
@@ -88,7 +56,6 @@ Init3D PROC
         	invoke ExitProcess,0
         .endif
          
-	
 	; Set up a view matrix.
 	invoke _D3DXMatrixLookAtRH, ADDR viewMatrix, ADDR cameraPos, ADDR lookAt, ADDR upVector
 	COINVOKE lpD3DDevice,IDirect3DDevice8,SetTransform, D3DTS_VIEW, ADDR viewMatrix
@@ -107,24 +74,76 @@ Init3D PROC
 	; Set the light and material parameters.
 	COINVOKE lpD3DDevice,IDirect3DDevice8,SetLight, 0, ADDR light
 	COINVOKE lpD3DDevice,IDirect3DDevice8,SetMaterial, ADDR material
-
+	
 	popa
 	ret
+	
+	Init2D:
+	pusha
+		invoke DestroyD3DDevice
+		invoke CreateD3DDevice,hWindow,XDIM,YDIM,32,0
+	.if eax == FALSE
+		invoke ExitProcess,0
+		popa
+		ret
+	.endif
+
+	; Disable Z-buffering.
+	COINVOKE lpD3DDevice,IDirect3DDevice8,SetRenderState, D3DRS_ZENABLE, D3DZB_FALSE
+	
+	; Disable lighting.
+	COINVOKE lpD3DDevice,IDirect3DDevice8,SetRenderState, D3DRS_LIGHTING, FALSE
+	
+	; Set the culling mode to no culling.
+	COINVOKE lpD3DDevice,IDirect3DDevice8,SetRenderState, D3DRS_CULLMODE, D3DCULL_NONE
+
+
+	; Transform the world matrix to move all objects "backwards".
+	invoke _D3DXMatrixTranslation, ADDR worldMatrix, xtrans,ytrans, ztrans
+	COINVOKE lpD3DDevice,IDirect3DDevice8,SetTransform, D3DTS_WORLD, ADDR worldMatrix
+	
+	; Set up a projection matrix. I'm using a right-handed coordinate system here, i.e.
+	; Z grows "towards the screen".
+	invoke _D3DXMatrixPerspectiveFovRH, ADDR projMatrix, fov, aspect, zNear, zFar
+	COINVOKE lpD3DDevice,IDirect3DDevice8,SetTransform, D3DTS_PROJECTION, ADDR projMatrix
+	
+	;mov bl,2
+	
+	popa
+	ret
+	
 Init3D ENDP
 
 
-WndProc2D PROC hWnd:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
-	LOCAL crect:RECT
-	LOCAL ps:PAINTSTRUCT
-	
- 	mov eax,uMsg
-
- 	.if eax==WM_PAINT
+WndProc3D proc hWnd:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
+		LOCAL crect:RECT
+		LOCAL ps:PAINTSTRUCT
+		LOCAL hdc:HDC 
+		LOCAL hMemDC:HDC 
+		
+		mov eax,uMsg
+		cmp bl,2
+		je pass
+		
+		.if uMsg==WM_CREATE 
+			invoke LoadBitmap,hInstance,IDB_MYBITMAP 
+			mov bitmap,eax 
+		;.endif
+		
+	 	.elseif  eax==WM_PAINT
     		invoke BeginPaint,hWnd,ADDR ps
-
-		; Draw another frame 
-    		invoke Render2D
 			
+			invoke Render3D
+			
+			mov    hdc,eax 
+			invoke CreateCompatibleDC,hdc 
+			mov    hMemDC,eax 
+			invoke SelectObject,hMemDC,bitmap 
+			invoke GetClientRect,hWnd,addr crect 
+			invoke BitBlt,hdc,0,0,crect.right,crect.bottom,hMemDC,0,0,SRCCOPY 
+			invoke DeleteDC,hMemDC 
+			
+						
     		invoke EndPaint,hWnd,ADDR ps
     		xor eax,eax
   
@@ -135,26 +154,25 @@ WndProc2D PROC hWnd:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 		xor eax,eax
 		
   	.elseif eax==WM_DESTROY
+			invoke DeleteObject,bitmap 
     		invoke PostQuitMessage,0
  
 	.else
  		invoke DefWindowProc,hWnd,uMsg,wParam,lParam
- 	.endif
+ 	.endif	
 	
-	ret
+ 	ret
 	
-WndProc2D ENDP
-
-WndProc3D proc hWnd:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
-		LOCAL crect:RECT
-		LOCAL ps:PAINTSTRUCT
-		mov eax,uMsg
-	
+	pass:
 	 	.if eax==WM_PAINT
+			; cmp bl,0
+			; je pass
     		invoke BeginPaint,hWnd,ADDR ps
-
-		; Draw another frame 
-    		invoke Render3D
+			
+			;invoke Render2D
+			
+			; push offset msg2
+			; call StdOut
 			
     		invoke EndPaint,hWnd,ADDR ps
     		xor eax,eax
@@ -171,18 +189,8 @@ WndProc3D proc hWnd:HWND,uMsg:UINT,wParam:WPARAM,lParam:LPARAM
 	.else
  		invoke DefWindowProc,hWnd,uMsg,wParam,lParam
  	.endif	
-	
- 	ret
+		ret
 WndProc3D endp
-
-; setDimension proc wc:DWORD
-	; cmp BX,8
-	; je Pass
-	; mov wc.lpfnWndProc,offset WndProc2D
-	; Pass:
-	; mov wc.lpfnWndProc,offset WndProc3D
-	; ret
-; setDimension endp
 
 
 WinMain PROC hInst:DWORD,prevInstance:DWORD,cmdlinePtr:DWORD,cmdShow:DWORD
@@ -198,17 +206,10 @@ WinMain PROC hInst:DWORD,prevInstance:DWORD,cmdlinePtr:DWORD,cmdShow:DWORD
  	mov wc.cbSize, sizeof WNDCLASSEX
  	mov wc.style,CS_OWNDC or CS_HREDRAW or CS_VREDRAW
  	mov wc.lpszClassName,offset MyClassName
- 	cmp BX,8
-	je notPass
-	mov wc.lpfnWndProc,offset WndProc2D
-	jmp Pass
-	notPass:
 	mov wc.lpfnWndProc,offset WndProc3D
-	jmp Pass
-	Pass:
  	invoke LoadCursor,NULL,IDC_ARROW
  	mov wc.hCursor,eax
- 	mov wc.hbrBackground,0
+ 	mov wc.hbrBackground,COLOR_WINDOW+1
 	invoke LoadIcon, hInst, IDI_ICON
 	mov wc.hIcon,eax
 	mov wc.hIconSm, NULL
@@ -220,18 +221,10 @@ WinMain PROC hInst:DWORD,prevInstance:DWORD,cmdlinePtr:DWORD,cmdShow:DWORD
  	mov hWindow,eax
 
 	; Initialize
-
-	cmp BX,8
-	je DX3
-	invoke Init2D
-	jmp passs
-	DX3:
 	invoke Init3D
-	jmp passs
-	
-	passs:
- 	invoke ShowWindow,eax,SW_SHOWDEFAULT
- 	invoke UpdateWindow,hWindow  
+	invoke ShowWindow,eax,SW_SHOWDEFAULT
+	invoke UpdateWindow,hWindow 
+
 
  	@@winmainmsgloop:
   		invoke InvalidateRect,hWindow,NULL,FALSE 
@@ -247,10 +240,10 @@ WinMain PROC hInst:DWORD,prevInstance:DWORD,cmdlinePtr:DWORD,cmdShow:DWORD
   	jmp @@winmainmsgloop
  
  	EVEN
+	
  
  	@@quitmsgposted:
 	
-	; Destroy the D3D device.  
   	invoke DestroyD3DDevice
   	
   	ret

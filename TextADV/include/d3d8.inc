@@ -683,7 +683,7 @@ D3DCOLORVALUE ENDS
 
 
 
-D3DMATERIAL8 STRUCT
+D3DMATERIAL8 STRUCT DWORD
     	Diffuse			D3DCOLORVALUE <?> ; Diffuse color RGBA 
     	Ambient			D3DCOLORVALUE <?> ; Ambient color RGB 
     	Specular		D3DCOLORVALUE <?> ; Specular 'shininess' 

@@ -1,15 +1,5 @@
 .code
 
-bin$ MACRO DDvalue
-    IFNDEF _rv_bin_string_
-        .data
-            _rv_bin_string_ db 36 dup(0)
-        .code
-    ENDIF
-    invoke crt__itoa, DDvalue, ADDR _rv_bin_string_, 2
-    EXITM <ADDR _rv_bin_string_>
-ENDM
-
 spacefunc proc
 		push offset space
 		call StdOut
@@ -52,7 +42,7 @@ INPUT proc
 		INPUT endp
 	
 strings_are_equal:		
-		invoke  MessageBox,0,ADDR welcome,ADDR ConsTitleString, MB_OK
+		;invoke  MessageBox,0,ADDR welcome,ADDR ConsTitleString, MB_OK
 		jmp createGraphicsWindow
 		noreply:
 				push offset bye 
@@ -64,12 +54,23 @@ strings_not_equal:
 		call StdOut
 		jmp start
 				
-request3D:
-		mov BX,8
-		printf("%X\t%d\t%o\t%s\n", ebx, ebx, ebx, bin$(ebx)) printf("%X\t%d\t%o\t%s\n", ebx, ebx, ebx, bin$(ebx))
-		;invoke GetModuleHandle,NULL 
-		invoke WinMain, eax,0,0,0
-		jmp noreply
+createGraphicsWindow:
+		mov bl,0
+		request3D:
+		
+		inc bl
+		cmp bl, 3
+		jge noreply
+		;invoke WndProc3D,0,0,0,0
+		;invoke WndProc,0,0,0,0
+		invoke GetModuleHandle,NULL 
+		mov    hInstance,eax
+		invoke GetCommandLine
+		invoke WinMain, hInstance,NULL,eax, SW_SHOWDEFAULT
+
+		jmp request3D				
+				
+		; printf("%X\t%d\t%o\t%s\n", ebx, ebx, ebx, bin$(ebx)) printf("%X\t%d\t%o\t%s\n", ebx, ebx, ebx, bin$(ebx))
 				
 general proc
 		 

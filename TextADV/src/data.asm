@@ -35,7 +35,10 @@ Global_Vars proc
 	
     hWindow         HWND    ?
     hInstance       HANDLE  ?
-    IDI_ICON        equ     01h
+    IDI_ICON        equ     01h      ;icon
+	IDB_MYBITMAP    equ 	1        ;bitmap
+	fpd3dmat1pt0    FLOAT    1.0f
+	fpd3dmat0pt0    FLOAT    0.0f
 	
 	; Window dimensions
 	XDIM	EQU 640
@@ -60,6 +63,8 @@ Global_Vars proc
 	material	D3DMATERIAL8 <<1.0,1.0,1.0,0.0>, <1.0,1.0,1.0,0.0>, <1.0,1.0,1.0,0.0>,\
 	                              <0.0,0.0,0.0,0.0>, 0.0>
 	
+	materialC	D3DMATERIAL8 <<1.0,1.0,1.0,0.0>, <1.0,1.0,1.0,0.0>, <1.0,1.0,1.0,0.0>,\
+	                              <100.0,0.0,100.0,0.0>, 0.0>
 
     ;g_pD3D              LPDIRECT3D8             NULL
     ;g_pd3dDevice        LPDIRECT3DDEVICE8       NULL
@@ -95,12 +100,12 @@ Global_Vars proc
 	x	REAL4 ?
 	y	REAL4 ?
 	z	REAL4 ?
-	;col dd ?
 	 nx	REAL4 ?
 	 ny	REAL4 ?
 	 nz	REAL4 ?
 	 u	REAL4 ?
 	 v	REAL4 ?
+	 ;col dd ?
     CUBE ENDS
 	
 cubevert 	CUBE 	<-5.0,-5.0,-5.0, 0.0, 0.0,-1.0, 0.0, 1.0>
@@ -160,6 +165,16 @@ cubevert 	CUBE 	<-5.0,-5.0,-5.0, 0.0, 0.0,-1.0, 0.0, 1.0>
 		ret
 	ENDM
 	
+	bin$ MACRO DDvalue
+    IFNDEF _rv_bin_string_
+        .data
+            _rv_bin_string_ db 36 dup(0)
+        .code
+    ENDIF
+		invoke crt__itoa, DDvalue, ADDR _rv_bin_string_, 2
+		EXITM <ADDR _rv_bin_string_>
+	ENDM
+	
 Global_Vars endp
 
 
@@ -174,6 +189,8 @@ Global_Vars endp
 		lpVertexBuffer	dd ?
 	    lpVertexBufferData dd ?
 		num1 dd ?
+		
+		bitmap dd ?
 	
 		viewMatrix	D3DXMATRIX <?>
 		projMatrix	D3DXMATRIX <?>

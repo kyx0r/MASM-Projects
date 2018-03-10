@@ -23,18 +23,14 @@
 	include \ASM\TextADV\src\directX.asm
 	include \ASM\TextADV\src\functions.asm
 	
+	;WinMain proto :DWORD,:DWORD,:DWORD,:DWORD
+	
 .data
 
 .data?
 	   
 .code
-		
-createGraphicsWindow:
-		invoke GetModuleHandle,NULL 
-		invoke WinMain,eax,NULL,NULL,NULL
-		;invoke ExitProcess,eax
-		jmp request3D
-		
+				
 start:
 		;invoke CreateFile, addr szTextureName, GENERIC_WRITE, FILE_SHARE_WRITE or FILE_SHARE_READ, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL
 		

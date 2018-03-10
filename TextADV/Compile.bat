@@ -3,7 +3,7 @@ color a
 pushd c:\ASM\TextADV\res
 
 if not exist rsrc.rc goto over1
-\MASM32\BIN\Rc.exe /v rsrc.rc
+\MASM32\BIN\Rc.exe rsrc.rc
 \MASM32\BIN\Cvtres.exe /machine:ix86 rsrc.res
 copy "c:\ASM\TextADV\res\rsrc.obj" "c:\ASM\TextADV"
 pushd c:\ASM\TextADV
@@ -18,10 +18,10 @@ pushd c:\ASM\TextADV\include
 copy "c:\ASM\TextADV\include\d3dsetup.obj" "c:\ASM\TextADV"
 copy "c:\ASM\TextADV\include\matrix.obj" "c:\ASM\TextADV"
 copy "c:\ASM\TextADV\include\vector.obj" "c:\ASM\TextADV"
-pushd c:\ASM\TextADV\
+pushd c:\ASM\TextADV
 
 if errorlevel 1 goto errasm
-\masm32\bin\Link /SUBSYSTEM:CONSOLE TextADV.obj rsrc.obj d3dsetup.obj matrix.obj vector.obj 
+\masm32\bin\Link /SUBSYSTEM:CONSOLE TextADV.obj d3dsetup.obj matrix.obj vector.obj rsrc.obj
 if errorlevel 1 goto errlink
 
 TextADV.exe

@@ -1,6 +1,5 @@
 
 .code
-
 ;-----------------------------------------------------------------------------
 ; Name: Render
 ; Desc: Draws the scene
@@ -20,7 +19,7 @@ Render2D PROC
 
 		; Draw a triangle.		
 		COINVOKE lpD3DDevice,IDirect3DDevice8,DrawPrimitiveUP, D3DPT_TRIANGLELIST, 1, ADDR vertexes, sizeof CUSTOM_VERTEX
-		COINVOKE lpD3DDevice,IDirect3DDevice8,DrawPrimitiveUP, D3DPT_LINESTRIP, 1, ADDR cubevert, sizeof CUBE
+		;COINVOKE lpD3DDevice,IDirect3DDevice8,DrawPrimitiveUP, D3DPT_LINESTRIP, 1, ADDR cubevert, sizeof CUBE
 		
 		;PRIMITIVES--------------------------------------------------------------------------------------------------------
 		; D3DPT_POINTLIST             EQU 1
@@ -41,6 +40,13 @@ Render2D PROC
 Render2D ENDP
 
 Render3D PROC
+	
+	;inc bl
+	;printf("%X\t%d\t%o\t%s\n", ebx, ebx, ebx, bin$(ebx)) printf("%X\t%d\t%o\t%s\n", ebx, ebx, ebx, bin$(ebx))
+	; push offset msg2
+	; call StdOut
+	
+	
 	pusha
 	
 	COINVOKE lpD3DDevice,IDirect3DDevice8,Clear, 0, NULL, D3DCLEAR_TARGET or D3DCLEAR_ZBUFFER,\
@@ -55,7 +61,7 @@ Render3D PROC
 		invoke _D3DXMatrixMultiply,ADDR worldMatrix,ADDR worldMatrix,ADDR tempMatrix
 		invoke _D3DXMatrixRotationZ,ADDR tempMatrix,theta
 		invoke _D3DXMatrixMultiply,ADDR worldMatrix,ADDR worldMatrix,ADDR tempMatrix
-
+				
 		; Finally do the translation.		
 		invoke _D3DXMatrixTranslation, ADDR tempMatrix, xtrans,ytrans, ztrans
 		invoke _D3DXMatrixMultiply,ADDR worldMatrix,ADDR worldMatrix,ADDR tempMatrix
@@ -65,10 +71,22 @@ Render3D PROC
 	
 		; Set the stream source to our vertex buffer.
 		COINVOKE lpD3DDevice,IDirect3DDevice8,SetStreamSource, 0, lpVertexBuffer, sizeof CUBE
-
+					
 		; Draw 12 triangles (6 faces of a cube).
 		COINVOKE lpD3DDevice,IDirect3DDevice8,DrawPrimitive, D3DPT_TRIANGLELIST, 0, 12
+		
+		; cmp bl,2
+		; jle pass
+		; ;.if bl == 2
+		
+		; COINVOKE lpD3DDevice,IDirect3DDevice8,SetVertexShader, D3DFVF_XYZ or D3DFVF_DIFFUSE
 
+		; ; Draw a triangle.		
+		; COINVOKE lpD3DDevice,IDirect3DDevice8,DrawPrimitiveUP, D3DPT_TRIANGLELIST, 1, ADDR vertexes, sizeof CUSTOM_VERTEX
+		; ;.endif
+		
+		;pass:
+		
 	; End of scene.
 	COINVOKE lpD3DDevice,IDirect3DDevice8,EndScene
 
@@ -78,7 +96,35 @@ Render3D PROC
 	fld dword ptr [theta]
 	fadd dword ptr [d_theta]
 	fstp dword ptr [theta]
-
+	
+	
 	popa
 	ret
+	
+	triangle:
+	
+	pusha
+	
+	COINVOKE lpD3DDevice,IDirect3DDevice8,Clear, 0, NULL, D3DCLEAR_TARGET or D3DCLEAR_ZBUFFER,\
+	                                             clearColor, clearDepth, 0
+	
+	COINVOKE lpD3DDevice,IDirect3DDevice8,BeginScene
+
+		; Set the vertex format.
+		COINVOKE lpD3DDevice,IDirect3DDevice8,SetVertexShader, D3DFVF_XYZ or D3DFVF_DIFFUSE
+
+		; Draw a triangle.		
+		COINVOKE lpD3DDevice,IDirect3DDevice8,DrawPrimitiveUP, D3DPT_TRIANGLELIST, 1, ADDR vertexes, sizeof CUSTOM_VERTEX
+		
+	; End of scene.
+	COINVOKE lpD3DDevice,IDirect3DDevice8,EndScene
+
+	; Swap the front and back buffers.
+	COINVOKE lpD3DDevice,IDirect3DDevice8,Present, NULL, NULL, NULL, NULL
+	
+	popa
+	ret
+	
 Render3D ENDP
+
+
