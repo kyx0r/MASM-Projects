@@ -1,0 +1,5 @@
+LIBRARY   Inject 
+EXPORTS   
+TestFunction
+TestFunction2
+TestFunction3
