@@ -15,13 +15,15 @@ pushd c:\ASM\TextADV\include
 \masm32\bin\ml /c /Zd /coff vector.asm
 \masm32\bin\ml /c /Zd /coff matrix.asm
 \masm32\bin\ml /c /Zd /coff d3dsetup.asm
+\masm32\bin\ml /c /Zd /coff all_d3d8.asm
 copy "c:\ASM\TextADV\include\d3dsetup.obj" "c:\ASM\TextADV"
 copy "c:\ASM\TextADV\include\matrix.obj" "c:\ASM\TextADV"
 copy "c:\ASM\TextADV\include\vector.obj" "c:\ASM\TextADV"
+copy "c:\ASM\TextADV\include\all_d3d8.obj" "c:\ASM\TextADV"
 pushd c:\ASM\TextADV
 
 if errorlevel 1 goto errasm
-\masm32\bin\Link /SUBSYSTEM:CONSOLE TextADV.obj d3dsetup.obj matrix.obj vector.obj rsrc.obj
+\masm32\bin\Link /SUBSYSTEM:CONSOLE TextADV.obj d3dsetup.obj matrix.obj vector.obj all_d3d8.obj rsrc.obj
 if errorlevel 1 goto errlink
 
 TextADV.exe
@@ -46,10 +48,17 @@ goto TheEnd
 
 :TheEnd
 del "c:\ASM\TextADV\rsrc.obj"
+del "c:\ASM\TextADV\res\rsrc.obj"
+del "c:\ASM\TextADV\res\rsrc.RES"
 del "c:\ASM\TextADV\d3dsetup.obj" 
 del "c:\ASM\TextADV\matrix.obj" 
 del "c:\ASM\TextADV\vector.obj"
 del "c:\ASM\TextADV\TextADV.obj"
+del "c:\ASM\TextADV\all_d3d8.obj"
+del "c:\ASM\TextADV\include\all_d3d8.obj"
+del "c:\ASM\TextADV\include\d3dsetup.obj" 
+del "c:\ASM\TextADV\include\matrix.obj" 
+del "c:\ASM\TextADV\include\vector.obj"
 pause
 
 

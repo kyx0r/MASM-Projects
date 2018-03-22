@@ -1,6 +1,6 @@
 #define	IDI_ICON		0x01L
 
-IDI_ICON	ICON "file0003.ico"
+IDI_ICON	ICON "ACU.ico"
 
 #define IDB_MYBITMAP   1
 
